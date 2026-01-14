@@ -1,0 +1,41 @@
+FROM ubuntu:22.04
+
+# Disable Prompt During Packages Installation
+ARG DEBIAN_FRONTEND=noninteractive
+ARG ROUTER_IP="192.168.1.1"
+ARG ROUTER_PORT="22"
+ARG JAR_LOCATION="./"
+ARG JAR_NAME="homey-1.0.jar"
+ARG DOCKER_USER=homey
+
+RUN apt update && apt install nano openssh-client openjdk-21-jre-headless -y  
+
+COPY "$JAR_LOCATION$JAR_NAME" $JAR_NAME
+
+#Create runtime user.
+#Add the router's cert to known_hosts.
+#Copy the runtime cert to the user's home.
+
+RUN useradd -m -U $DOCKER_USER && \
+	mkdir -p -m 0700 /home/$DOCKER_USER/.ssh  && \
+	ssh-keyscan -p $ROUTER_PORT $ROUTER_IP >> /home/$DOCKER_USER/.ssh/known_hosts  && \
+	chown -R $DOCKER_USER:$DOCKER_USER /home/$DOCKER_USER/
+	
+RUN cat << EOF > entry-point.sh
+#!/bin/bash
+  
+cd /home/$DOCKER_USER/.ssh/
+cp /read/id_rsa .
+chmod 600 id_rsa
+chown $DOCKER_USER:$DOCKER_USER id_rsa
+cd /
+
+#-m preserve the current environment, otherwise the docker run environment variables don't pass through'.'
+exec su -m "$DOCKER_USER" -c "java -jar /$JAR_NAME"
+
+EOF
+
+RUN chmod 700 entry-point.sh
+	
+ENTRYPOINT ["/entry-point.sh"]
+

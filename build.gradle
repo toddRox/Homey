@@ -1,0 +1,61 @@
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+	id 'com.github.node-gradle.node' version '7.0.1'
+}
+
+group = 'rox.todd'
+version = '1.0'
+
+apply plugin: 'io.spring.dependency-management'
+
+java {
+	sourceCompatibility = '21'
+}
+
+node {
+    version = "24.11.1"
+    npmVersion = "11.6.2"
+    download = true
+    nodeProjectDir = file("${project.projectDir}/src/main/react")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/clojure"
+        }
+    }
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.clojure:clojure:1.12.3'
+ 
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.12.2'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' //(https://github.com/junit-team/junit-framework/issues/4374)
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task buildReact(type: NpmTask, dependsOn: npmInstall) {
+    args = ["run", "build"]
+}
+
+task copyReactBuild(type: Copy, dependsOn: buildReact) {
+    from("$projectDir/src/main/react/build")
+    into("$buildDir/resources/main/static")
+}
+
+build.dependsOn(buildReact)
+processResources.dependsOn(copyReactBuild)
+
+
