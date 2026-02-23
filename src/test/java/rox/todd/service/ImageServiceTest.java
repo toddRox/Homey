@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.FileSystemUtils;
 
 import rox.todd.common.util.Const.ConfigPropery;
 import rox.todd.common.util.Enums.Service;
@@ -45,7 +46,7 @@ public class ImageServiceTest {
   @AfterEach
   public void after() throws IOException{
     if(workSpace != null) {
-      //TODO: Uncomment - FileSystemUtils.deleteRecursively(workSpace);
+      FileSystemUtils.deleteRecursively(workSpace);
       workSpace = null;
     }
   }
