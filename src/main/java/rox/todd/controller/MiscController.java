@@ -15,9 +15,12 @@ import rox.todd.service.WifiService;
  */
 @RestController
 public class MiscController {
-  @Autowired
   private WifiService ws;
 
+  @Autowired
+  public MiscController(WifiService ws) {
+    this.ws = ws;
+  }
 
   @GetMapping("/ping")
   private String ping() {

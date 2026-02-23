@@ -25,10 +25,12 @@ import rox.todd.service.ImageService;
  */
 @RestController
 public class ImageController {
+  private ImageService is;
   
   @Autowired
-  private ImageService is;
-
+  public ImageController(ImageService is) {
+    this.is = is;
+  }
   
   @GetMapping("/directory-data")
   private List<DirectoryData> getDirectoryData() throws Exception {

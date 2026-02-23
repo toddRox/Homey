@@ -9,4 +9,5 @@ node_modules
 .cache
 .calva
 .cpcache
+LOG_DIR_IS_UNDEFINED
 

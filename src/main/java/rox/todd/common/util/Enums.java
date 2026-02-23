@@ -12,7 +12,7 @@ import rox.todd.common.exception.HomeyException;
 public class Enums{
   
   
-  public enum Service {WIFI, IMAGE} 
+  public enum Service {WIFI, IMAGE}
   
   public enum PathSort {
     DATE_ASC((p1, p2)->dateCompare(p1, p2)),

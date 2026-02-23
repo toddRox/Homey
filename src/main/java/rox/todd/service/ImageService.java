@@ -37,18 +37,20 @@ import rox.todd.model.DirectoryData;
 public class ImageService {
   private static final Logger log = LoggerFactory.getLogger(ImageService.class);
   private static final Pattern pathDelimPattern = Pattern.compile("[\\\\\\/]+");
-  private static final Pattern numbersPattern = Pattern.compile("\\d+");
-  
-  @Autowired
+  private static final Pattern yearPattern = Pattern.compile("\\d{4}");
   private Config config;
   private Path baseImageDir;
   private Path baseThumbnailDir;
   private AutoRefreshCache<List<DirectoryData>> dirDataCache = new AutoRefreshCache<>(args->getDirectoryData(false));
   
-  
+  @Autowired
+  public ImageService(Config config) {
+    this.config = config;
+  }
   
   @PostConstruct
-  private void initialize() {
+  public void initialize() {
+    
     if(!config.isActive(Enums.Service.IMAGE)) {
       log.info("Skipping initialization for: " + Enums.Service.IMAGE);
       return;
@@ -88,7 +90,7 @@ public class ImageService {
         .skip(1) //Skip the root dirs name
         .filter(obj->(obj instanceof List) && ((List)obj).size() > 1)
         .map(obj->((File)((List)obj).get(0)).getName())
-        .filter(n->numbersPattern.matcher(n).matches())
+        .filter(n->yearPattern.matcher(n).matches())
         .map(Integer::parseInt)
         .collect(toList());
     

@@ -26,9 +26,13 @@ import rox.todd.common.util.Const.ConfigPropery;
 public class WifiService {
   private static final Logger log = LoggerFactory.getLogger(WifiService.class);
   private static final Pattern hostAndPortPattern = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}$");
-  @Autowired
   private Config config;
   private List<String> sshCmd;
+  
+  @Autowired
+  public WifiService(Config config) {
+    this.config = config;
+  }
   
   @PostConstruct
   private void initialize() {
